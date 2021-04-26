@@ -24,16 +24,41 @@ function Home() {
 		)
 
 		// check if last box
-		if (e.target.nextSibling) {
+		if (e.target.value && e.target.nextSibling) {
 			e.target.nextSibling.focus()
 		}
 	}
 
 	const handlePaste = (e) => {
-		const value = e.clipboardData.getData('text/plain').trim().split('')
-		const spliced = value.splice(0, codes.length)
-		// console.log('pasted', value, spliced)
-		setCodes(spliced)
+		const clipboardText = e.clipboardData
+			.getData('text/plain')
+			.trim()
+			.replaceAll(' ', '')
+
+		if (isNaN(clipboardText)) {
+			return
+		}
+
+		const clipboard = clipboardText.split('')
+
+		let result = []
+
+		// check if clipboard length > otp boxes
+		if (clipboard.length >= codes.length) {
+			result = clipboard.splice(0, codes.length)
+		} else {
+			// splice all clipboard,
+			const splicedClipBoard = [...clipboard.splice(0, clipboard.length)]
+			const splicedCodes = [
+				...codes.splice(
+					clipboard.length,
+					codes.length - splicedClipBoard.length,
+				),
+			]
+			result = [...splicedClipBoard, ...splicedCodes]
+		}
+
+		setCodes(result)
 	}
 
 	return (
