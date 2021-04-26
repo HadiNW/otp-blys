@@ -1,8 +1,7 @@
 import { useState } from 'react'
 
-const OTPBox = ({ codeLength, title }) => {
-
-	const [codes, setCodes] = useState(() => new Array(6).fill(''))
+const OTPBox = ({ codeLength, title, sendOtp }) => {
+	const [codes, setCodes] = useState(() => new Array(codeLength).fill(''))
 
 	const handleChange = (e, i) => {
 		const value = e.target.value
@@ -29,14 +28,42 @@ const OTPBox = ({ codeLength, title }) => {
 	}
 
 	const handlePaste = (e) => {
-		const value = e.clipboardData.getData('text/plain').trim().split('')
-		const spliced = value.splice(0, codes.length)
-		// console.log('pasted', value, spliced)
-		setCodes(spliced)
+		const clipboardText = e.clipboardData
+			.getData('text/plain')
+			.trim()
+			.replaceAll(' ', '')
+
+		if (isNaN(clipboardText)) {
+			return
+		}
+
+		const clipboard = clipboardText.split('')
+
+		let result = []
+
+		// check if clipboard length > otp boxes
+		if (clipboard.length >= codes.length) {
+			result = clipboard.splice(0, codes.length)
+		} else {
+			// splice all clipboard,
+			const splicedClipBoard = [...clipboard.splice(0, clipboard.length)]
+			const splicedCodes = [
+				...codes.splice(
+					clipboard.length,
+					codes.length - splicedClipBoard.length,
+				),
+			]
+			result = [...splicedClipBoard, ...splicedCodes]
+		}
+
+		setCodes(result)
 	}
+
+	const handleSend = () => sendOtp(codes.join(''))
+
 	return (
 		<div className='verification-code'>
-			<h3 className='title'>Verification Code</h3>
+			<h3 className='title'>{title}</h3>
 			<div className='inputs'>
 				{codes.map((code, i) => (
 					<input
@@ -51,6 +78,7 @@ const OTPBox = ({ codeLength, title }) => {
 					/>
 				))}
 			</div>
+			<button onClick={handleSend}>send OTP</button>
 		</div>
 	)
 }
