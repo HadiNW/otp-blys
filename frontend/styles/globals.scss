@@ -83,6 +83,10 @@ a {
 	&:not(:last-of-type) {
 		margin-right: 16px;
 	}
+	&:focus {
+		outline: none;
+		border: 1px solid #10253D;
+	}
 	&.highlight {
 		outline: none;
 		border: 1px solid #ff988f;

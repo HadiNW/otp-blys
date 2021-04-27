@@ -18,7 +18,6 @@ const OTPBox = ({ codeLength, title, sendOtp, subtitle }) => {
 
 		setCodes((prevCodes) =>
 			prevCodes.map((code, idx) => {
-				console.log({ prevCodes })
 				if (i === idx) {
 					if (!value) {
 						e.target.classList.add('highlight')
@@ -86,7 +85,6 @@ const OTPBox = ({ codeLength, title, sendOtp, subtitle }) => {
 				router.push('/success')
 			}
 		} catch (e) {
-			console.log(e.response.data)
 			setErrorMessage(e.response.data.message)
 		}
 	}
