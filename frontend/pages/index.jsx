@@ -16,6 +16,8 @@ function Home() {
 						subtitle='Enter 6 digit verification code sent to your phone number'
 					/>
 				</div>
+				<img src='/assets/atom.png' alt='' className='atom' />
+				<img src='/assets/atom-line.png' alt='' className='atom-line' />
 			</div>
 		</>
 	)

@@ -40,9 +40,21 @@ a {
 		align-items: center;
 		padding: 72px;
 	}
+
+	.atom {
+		position: absolute;
+		top: 5%;
+		right: 10%;
+	}
+	.atom-line {
+		position: absolute;
+		bottom: 0%;
+		right: 0%;
+	}
 }
 
 .title {
+	width: 300px;
 	font-weight: 600;
 	font-size: 32px;
 	line-height: 48px;
@@ -142,5 +154,26 @@ a {
 		font-size: 18px;
 		line-height: 27px;
 		color: #ffffff;
+	}
+
+	.spiral1 {
+		position: absolute;
+		top: 15%;
+		left: 5%;
+	}
+	.spiral2 {
+		position: absolute;
+		bottom: 2%;
+		right: 10%;
+	}
+	.check-list {
+		position: absolute;
+		bottom: 10%;
+		left: 5%;
+	}
+	.atom-line {
+		position: absolute;
+		top: 15%;
+		right: 5%;
 	}
 }
