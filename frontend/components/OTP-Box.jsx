@@ -1,11 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import axios from '../lib/axios'
 
-const OTPBox = ({ codeLength, title, sendOtp }) => {
+const OTPBox = ({ codeLength, title, sendOtp, subtitle }) => {
 	const [codes, setCodes] = useState(() => new Array(codeLength).fill(''))
+	const [errorValidation, setErrorValidation] = useState(false)
+	const [errorMessage, setErrorMessage] = useState()
+
+	const router = useRouter()
 
 	const handleChange = (e, i) => {
 		const value = e.target.value
 		if (isNaN(value)) {
+			e.target.classList.add('highlight')
 			return
 		}
 
@@ -13,7 +20,11 @@ const OTPBox = ({ codeLength, title, sendOtp }) => {
 			prevCodes.map((code, idx) => {
 				console.log({ prevCodes })
 				if (i === idx) {
-					console.log(value.length, value, 'llo')
+					if (!value) {
+						e.target.classList.add('highlight')
+					} else {
+						e.target.classList.remove('highlight')
+					}
 					return value
 				} else {
 					return code
@@ -59,16 +70,57 @@ const OTPBox = ({ codeLength, title, sendOtp }) => {
 		setCodes(result)
 	}
 
-	const handleSend = () => sendOtp(codes.join(''))
+	const handleSend = async () => {
+		const otpCode = codes.join('')
+
+		if (errorValidation) {
+			return
+		}
+
+		try {
+			const { data } = await axios.post('/otp-authentication', {
+				otp: otpCode,
+			})
+
+			if (data.message === 'Verification Success') {
+				router.push('/success')
+			}
+		} catch (e) {
+			console.log(e.response.data)
+			setErrorMessage(e.response.data.message)
+		}
+	}
+
+	useEffect(() => {
+		const otp = codes.join('')
+		if (!otp) {
+			setErrorValidation(true)
+		} else {
+			setErrorValidation(false)
+		}
+
+		if (isNaN(otp)) {
+			setErrorValidation(true)
+		} else {
+			setErrorValidation(false)
+		}
+
+		if (otp.length != codeLength) {
+			setErrorValidation(true)
+		} else {
+			setErrorValidation(false)
+		}
+	}, [codes])
 
 	return (
 		<div className='verification-code'>
 			<h3 className='title'>{title}</h3>
+			<p className='subtitle'>{subtitle}</p>
 			<div className='inputs'>
 				{codes.map((code, i) => (
 					<input
 						type='text'
-						className='code'
+						className='input-code'
 						maxLength='1'
 						key={i}
 						onChange={(e) => handleChange(e, i)}
@@ -78,7 +130,13 @@ const OTPBox = ({ codeLength, title, sendOtp }) => {
 					/>
 				))}
 			</div>
-			<button onClick={handleSend}>send OTP</button>
+			{errorMessage && <p className='error-message'>{errorMessage}</p>}
+			<button
+				className={errorValidation ? 'btn-gray' : 'btn-orange'}
+				onClick={handleSend}
+			>
+				Verify
+			</button>
 		</div>
 	)
 }
